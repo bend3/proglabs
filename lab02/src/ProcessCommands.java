@@ -1,8 +1,11 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 import exceptions.DirectoryExistsException;
@@ -101,9 +104,177 @@ public class ProcessCommands {
                     System.out.println("File not found");
                 }
                 break;
+            case "head": 
+                try {
+                    head(command);
+                } catch (InvalidArgumentsException e) {
+                    System.out.println(e);
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found");
+                }
+                break;
+
+            case "tail": 
+                try {
+                    tail(command);
+                } catch (InvalidArgumentsException e) {
+                    System.out.println(e);
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found");
+                }
+                break;
+
+            case "grep":
+                try {
+                    grep(command);
+                } catch (InvalidArgumentsException e) {
+                    System.out.println(e);
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found");
+                } catch (IOException e) {
+                    System.out.println("Oops something went wrong");
+                }
+                break;
+
             default:
                 throw new UnknownCommand();
         }
+    }
+
+
+    /**
+     * writes the lines that have matches form source to target file
+     * @param command
+     * <ul>
+     * <li><b>'-p'</b>: optional, if given then pattern can be specified </li>
+     * <li><b>&lt p &gt</b>: pattern, defaults to "", so every line is copied </li>
+     * <li><b>'-i'</b>: input file </li>
+     * <li><b>&lt i &gt</b>: name of input file </li>
+     * <li><b>'-o'</b>: output file optional if not given the lines will be printed to console</li>
+     * <li><b>&lt o &gt</b>: name of output file </li>
+     * </ul>
+     * @throws InvalidArgumentsException if '-i' is not given
+     * @throws IOException
+     */
+    private void grep(String[] command) throws InvalidArgumentsException, IOException {
+        String input = null;
+        String output = null;
+        String pattern = "";
+        for (int i = 0; i < command.length; i++) {
+            if ((i+1 < command.length) && command[i].equals("-i")) {
+                i++;
+                input = command[i];
+            } else if ((i+1 < command.length) && command[i].equals("-o")) {
+                i++;
+                output = command[i];
+            } else if ((i+1 < command.length) && command[i].equals("-p")) {
+                i++;
+                pattern = command[i];
+            }
+        }
+        if (input == null) {
+            throw new InvalidArgumentsException();
+        }
+        pattern = ".*" + pattern + ".*";
+        File source = findFile(input);
+        Scanner scanner = new Scanner(source);
+        File target;
+        FileWriter fileWriter = null;
+        BufferedWriter bufferedWriter = null;
+        try {
+            target = findFile(output);
+            try {
+                fileWriter = new FileWriter(target);
+                bufferedWriter = new BufferedWriter(fileWriter);
+            } catch (IOException e) {
+                scanner.close();
+                throw new InvalidArgumentsException();
+            }
+        } catch (FileNotFoundException e) {
+            target = null;
+        }
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if (line.matches(pattern)) {
+                if (target != null) {
+                    bufferedWriter.write(line + "\n");
+                } else{
+                    System.out.println(line);
+                }
+            }
+        }
+        bufferedWriter.close();
+        scanner.close();;
+
+    }
+
+    /**
+     * writes the last n lines of the file
+     * @param command
+     * <ul>
+     * <li><b>'-n'</b>: optional, if given then n can be specified </li>
+     * <li><b>&lt n &gt</b>: the number of lines to print </li>
+     * <li><b>&lt file &gt</b>: the name of the file, this should be the last argument</li>
+     * </ul>
+     * @throws InvalidArgumentsException if '-n' is given but it isnt a valid number or filename is not given
+     * @throws FileNotFoundException if <b>command[1]</b> is not found in <b>wd</b> or it is unable to be opened for reading
+     */
+    private void tail(String[] command) throws InvalidArgumentsException, FileNotFoundException {
+        int n = 10;
+        if(command[1].equals("-n")){
+            try {
+                n = Integer.parseInt(command[2]);
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                n = 10;
+                throw new InvalidArgumentsException();
+            }
+        }
+        File file = findFile(command[command.length-1]);
+        Scanner scanner = new Scanner(file);
+        LinkedList<String> strings = new LinkedList<String>();
+        int counter = 0;
+        while(scanner.hasNextLine()){
+            strings.add(counter++ + ": " + scanner.nextLine());
+            n--;
+            if (n < 0) {
+                strings.remove();
+            }
+        }
+        for (String string : strings) {
+            System.out.println(string);
+        }
+        scanner.close();
+    }
+
+    /**
+     * writes the first n lines of the file
+     * @param command
+     * <ul>
+     * <li><b>'-n'</b>: optional, if given then n can be specified </li>
+     * <li><b>&lt n &gt</b>: the number of lines to print </li>
+     * <li><b>&lt file &gt</b>: the name of the file, this should be the last argument</li>
+     * </ul>
+     * @throws InvalidArgumentsException if '-n' is given but it isnt a valid number or filename is not given
+     * @throws FileNotFoundException if <b>command[1]</b> is not found in <b>wd</b> or it is unable to be opened for reading
+     */
+    private void head(String[] command) throws InvalidArgumentsException, FileNotFoundException {
+        int n = 10;
+        if(command[1].equals("-n")){
+            try {
+                n = Integer.parseInt(command[2]);
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                n = 10;
+                throw new InvalidArgumentsException();
+            }
+        }
+        File file = findFile(command[command.length-1]);
+        Scanner scanner = new Scanner(file);
+        int counter = 0;
+        while((n > 0) && scanner.hasNextLine()){
+            System.out.println(counter++ + ": " +scanner.nextLine());
+            n--;
+        }
+        scanner.close();
     }
 
     /**
