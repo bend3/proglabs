@@ -365,6 +365,9 @@ public class ProcessCommands {
         System.out.println(wrapFirstLine("Copy succesful"));
     }
 
+    /**
+     * im too lazy to write this
+     */
     private void mv(String[] command) throws FileNotFoundException, InvalidArgumentsException, RenameException {
         if (command.length <= 2) {
             throw new InvalidArgumentsException();
@@ -376,6 +379,9 @@ public class ProcessCommands {
         System.out.println(wrapFirstLine("Rename succesful"));
     }
 
+    /**
+     * im too lazy to write this
+     */
     private void mkdir(String[] command) throws InvalidArgumentsException , DirectoryExistsException {
         if (command.length <= 1) {
             throw new InvalidArgumentsException();
@@ -387,6 +393,9 @@ public class ProcessCommands {
         
     }
 
+    /**
+     * im too lazy to write this
+     */
     private void rm(String[] command) throws FileNotFoundException {
         File deleteFile = null;
         if (command.length <= 1) {
@@ -404,6 +413,9 @@ public class ProcessCommands {
         System.out.println(wrapFirstLine("Delete succesful"));
     }
 
+    /**
+     * im too lazy to write this
+     */
     private File findFile(String string) throws FileNotFoundException {
         for (File file : wd.listFiles()) {
             if (file.getName().equals(string)) {
@@ -413,6 +425,9 @@ public class ProcessCommands {
         throw new FileNotFoundException();
     }
 
+    /**
+     * im too lazy to write this
+     */
     private void cd(String[] command) throws FileNotFoundException {
         File nextDir = null;
         if (command.length <= 1) {
@@ -436,6 +451,9 @@ public class ProcessCommands {
         wd = nextDir;
     }
 
+    /**
+     * im too lazy to write this
+     */
     private void ls(String[] command) {
         System.out.println(wrapFirstLine("List"));
         try {
@@ -458,6 +476,9 @@ public class ProcessCommands {
         System.out.println(wrapLastLine(4)+ "\n");
     }
 
+    /**
+     * im too lazy to write this
+     */
     private String convert(long totalSpace) {
         double steps = Math.pow(2, 10); // could be Math.pow(10, 3) its confusing
         if (totalSpace < Math.pow(steps, 1)) {
@@ -474,6 +495,9 @@ public class ProcessCommands {
         return "very big";
     }
 
+    /**
+     * im too lazy to write this
+     */
     protected void pwd(String[] command) {
         // try {
         //      startingDirectoryPath = System.getProperty("user.dir");
@@ -494,21 +518,33 @@ public class ProcessCommands {
         System.out.println(path);
     }
 
+    /**
+     * im too lazy to write this
+     */
     protected void exit(String[] command) {
         System.out.println(wrapFirstLine("Exit") + "\n");
         System.exit(0);
     }
 
+    /**
+     * im too lazy to write this
+     */
     private String wrap(String title, String string){
         int len = string.length();
         String res = wrapFirstLine(title) + "\n" + string + "\n" + wrapLastLine(len) + "\n";
         return res;
     }
     
+    /**
+     * im too lazy to write this
+     */
     private String wrapFirstLine(String title){
         return "--------" + title + "--------";
     }
     
+    /**
+     * im too lazy to write this
+     */
     private String wrapLastLine(int... fillLength){
         //TODO append fillLength '-' characters efficiently if possible currently it appends 4
         return "--------------------";
