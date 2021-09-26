@@ -13,13 +13,13 @@ public class BeerComparator implements Comparator<Beer> {
 
     private int sortBy(Property property, Beer o1, Beer o2){
         if (property == Property.Name){
-            return o1.getName().compareTo(o2.getName());
+            return new BeerNameComparator().compare(o1, o2);
         }
         if (property == Property.Style){
-            return o1.getStyle().compareTo(o2.getStyle());
+            return new BeerStyleComparator().compare(o1, o2);
         }
         if (property == Property.Strength){
-            return Double.compare(o1.getStrength(), o2.getStrength());
+            return new BeerStrengthComparator().compare(o1, o2);
         }
         return 0;
     }

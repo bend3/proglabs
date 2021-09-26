@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class Beer implements Serializable {
+public class Beer implements Serializable, Comparable<Beer> {
     private static File storageDir = new File(System.getProperty("user.dir"));
     private static String storageName = "beers.ser";
     private String name;
@@ -150,7 +150,7 @@ public class Beer implements Serializable {
         }
     }
 
-    private static void loadList() throws IOException, FileNotFoundException {
+    private static void loadList() throws IOException {
         File source = null;
         for (File file: storageDir.listFiles()) {
 //            System.out.println(file.getName());
@@ -239,5 +239,10 @@ public class Beer implements Serializable {
                 ", style='" + style + '\'' +
                 ", strength=" + strength +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Beer o) {
+        return name.compareTo(o.getName());
     }
 }
