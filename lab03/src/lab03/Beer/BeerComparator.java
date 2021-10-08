@@ -7,7 +7,7 @@ import java.util.List;
 public class BeerComparator implements Comparator<Beer> {
     enum Property {Name , Style, Strength}
     private final String[] args;
-    public BeerComparator(String[] args) {
+    public BeerComparator(String... args) {
         this.args = args;
     }
 
