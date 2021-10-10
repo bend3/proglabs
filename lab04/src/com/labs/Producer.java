@@ -24,7 +24,7 @@ public class Producer implements Runnable{
             }
             System.out.println("produced " + string + " " + counter++ + " " + time);
             try {
-                Thread.sleep(n);
+                Thread.sleep(Double.valueOf(Math.random()*n).longValue());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

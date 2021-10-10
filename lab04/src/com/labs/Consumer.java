@@ -9,6 +9,7 @@ public class Consumer extends Thread{
         this.fifo = fifo;
         this.string = string;
         this.n = n;
+        setName("consumer");
     }
 
     @Override
@@ -18,7 +19,7 @@ public class Consumer extends Thread{
                 long time  = System.currentTimeMillis() % 100000;
                 String consumedString = fifo.get();
                 System.out.println("consumed " + string + " " + consumedString + " " + time);
-                sleep(n);
+                sleep(Double.valueOf(Math.random()*n).longValue());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
