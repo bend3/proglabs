@@ -32,7 +32,7 @@ public class Fifo{
             }
         }
         notifyAll();
-        System.out.println(Thread.currentThread().getName());
+//        System.out.println(Thread.currentThread().getName());
         return list.remove();
     }
 }
