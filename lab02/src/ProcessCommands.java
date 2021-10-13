@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -13,10 +14,103 @@ import exceptions.InvalidArgumentsException;
 import exceptions.RenameException;
 import exceptions.UnknownCommand;
 
+import javax.print.attribute.HashAttributeSet;
+
 public class ProcessCommands {
+    private HashMap<String, Command> commands;
     private File wd;
     public ProcessCommands() {
         wd = new File(System.getProperty("user.dir"));
+        commands = new HashMap<>();
+        commands.put("exit" , this::exit);
+        commands.put("pwd" , this::pwd);
+        commands.put("ls" , this::ls);
+        commands.put("cd" , command -> {
+            try {
+                cd(command);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
+        });
+        commands.put("rm" , command -> {
+            try {
+                rm(command);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
+        });
+        commands.put("mkdir", command -> {
+            try {
+                mkdir(command);
+            } catch (InvalidArgumentsException | DirectoryExistsException e) {
+                System.out.println(e);
+            }
+        });
+        commands.put("mv", command -> {
+            try {
+                mv(command);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            } catch (InvalidArgumentsException | RenameException e) {
+                System.out.println(e);
+            }
+        });
+        commands.put("cp", command -> {
+            try {
+                cp(command);
+            } catch (InvalidArgumentsException e) {
+                System.out.println(e);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
+        });
+        commands.put("cat", command -> {
+            try {
+                cat(command);
+            } catch (InvalidArgumentsException e) {
+                System.out.println(e);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
+        });
+        commands.put("length", command -> {
+            try {
+                length(command);
+            } catch (InvalidArgumentsException e) {
+                System.out.println(e);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
+        });
+        commands.put("head", command -> {
+            try {
+                head(command);
+            } catch (InvalidArgumentsException e) {
+                System.out.println(e);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
+        });
+        commands.put("tail", command -> {
+            try {
+                tail(command);
+            } catch (InvalidArgumentsException e) {
+                System.out.println(e);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
+        });
+        commands.put("grep", command -> {
+            try {
+                grep(command);
+            } catch (InvalidArgumentsException e) {
+                System.out.println(e);
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            } catch (IOException e) {
+                System.out.println("Oops something went wrong");
+            }
+        });
     }
 
     public String getDirectoryPath(){
@@ -24,121 +118,126 @@ public class ProcessCommands {
     }
 
     public void process(String[] command) throws UnknownCommand{
-        switch (command[0]) {
-            case "exit":
-                exit(command);
-                break;
-            
-            case "pwd":
-                pwd(command);
-                break;
-
-            case "ls":
-                ls(command);
-                break;
-
-            case "cd":
-                try {
-                    cd(command);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                }
-                break;
-
-            case "rm":
-                try {
-                    rm(command);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                }
-                break;
-
-            case "mkdir":
-                try {
-                    mkdir(command);
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (DirectoryExistsException e) {
-                    System.out.println(e);
-                }
-                break;
-
-            case "mv":
-                try {
-                    mv(command);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (RenameException e) {
-                    System.out.println(e);
-                } 
-                break;
-            
-            case "cp":
-                try {
-                    cp(command);
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                }
-                break;
-
-            case "cat":
-                try {
-                    cat(command);
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                }
-                break;
-
-            case "length":
-                try {
-                    length(command);
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                }
-                break;
-            case "head": 
-                try {
-                    head(command);
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                }
-                break;
-
-            case "tail": 
-                try {
-                    tail(command);
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                }
-                break;
-
-            case "grep":
-                try {
-                    grep(command);
-                } catch (InvalidArgumentsException e) {
-                    System.out.println(e);
-                } catch (FileNotFoundException e) {
-                    System.out.println("File not found");
-                } catch (IOException e) {
-                    System.out.println("Oops something went wrong");
-                }
-                break;
-
-            default:
-                throw new UnknownCommand();
+        if (commands.get(command[0]) != null) {
+            commands.get(command[0]).execute(command);
+        } else {
+            throw new UnknownCommand();
         }
+//        switch (command[0]) {
+//            case "exit":
+//                exit(command);
+//                break;
+//
+//            case "pwd":
+//                pwd(command);
+//                break;
+//
+//            case "ls":
+//                ls(command);
+//                break;
+//
+//            case "cd":
+//                try {
+//                    cd(command);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                }
+//                break;
+//
+//            case "rm":
+//                try {
+//                    rm(command);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                }
+//                break;
+//
+//            case "mkdir":
+//                try {
+//                    mkdir(command);
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (DirectoryExistsException e) {
+//                    System.out.println(e);
+//                }
+//                break;
+//
+//            case "mv":
+//                try {
+//                    mv(command);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (RenameException e) {
+//                    System.out.println(e);
+//                }
+//                break;
+//
+//            case "cp":
+//                try {
+//                    cp(command);
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                }
+//                break;
+//
+//            case "cat":
+//                try {
+//                    cat(command);
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                }
+//                break;
+//
+//            case "length":
+//                try {
+//                    length(command);
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                }
+//                break;
+//            case "head":
+//                try {
+//                    head(command);
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                }
+//                break;
+//
+//            case "tail":
+//                try {
+//                    tail(command);
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                }
+//                break;
+//
+//            case "grep":
+//                try {
+//                    grep(command);
+//                } catch (InvalidArgumentsException e) {
+//                    System.out.println(e);
+//                } catch (FileNotFoundException e) {
+//                    System.out.println("File not found");
+//                } catch (IOException e) {
+//                    System.out.println("Oops something went wrong");
+//                }
+//                break;
+//
+//            default:
+//                throw new UnknownCommand();
+//        }
     }
 
 

@@ -1,4 +1,5 @@
 import java.io.Console;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeoutException;
@@ -32,13 +33,14 @@ public class Input {
             beforeInput = ">";
         }
         
-        Console console = System.console();
-        if (console == null) {
-            throw new ConsoleUnavailable();
-        }
+//        Console console = System.console();
+//        if (console == null) {
+//            throw new ConsoleUnavailable();
+//        }
+        Scanner scanner = new Scanner(System.in);
         String splitChar = " ";
         System.out.print(beforeInput);
-        String input = System.console().readLine();
+        String input = scanner.nextLine();
         timer.cancel();
         return input.split(splitChar);
     }
