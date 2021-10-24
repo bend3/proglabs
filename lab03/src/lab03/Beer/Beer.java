@@ -1,5 +1,6 @@
 package lab03.Beer;
 
+import com.sun.jdi.VoidType;
 import lab03.Command;
 import lab03.exceptions.InvalidCommandException;
 import lab03.exceptions.UnknownCommandException;
@@ -7,10 +8,13 @@ import lab03.exceptions.UnknownCommandException;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 
-public class Beer implements Serializable, Comparable<Beer> {
+public class Beer implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static HashMap<String, Command> commands;
     private static HashMap<String, Comparator<Beer>> comparators;
+
 
     static {
         comparators = new HashMap<>();
@@ -314,6 +318,7 @@ public class Beer implements Serializable, Comparable<Beer> {
         return style;
     }
 
+
     @Override
     public String toString() {
         return "Beer{" +
@@ -321,10 +326,5 @@ public class Beer implements Serializable, Comparable<Beer> {
                 ", style='" + style + '\'' +
                 ", strength=" + strength +
                 '}';
-    }
-
-    @Override
-    public int compareTo(Beer o) {
-        return name.compareTo(o.getName());
     }
 }
